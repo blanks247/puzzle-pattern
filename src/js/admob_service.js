@@ -1,4 +1,4 @@
-// Winding Arrows - Google AdMob Service
+// Puzzle Pattern - Google AdMob Service
 
 const AdMobService = {
   // Official Live Ad Unit IDs

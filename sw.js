@@ -1,4 +1,4 @@
-const CACHE_NAME = 'winding-arrows-v1';
+const CACHE_NAME = 'puzzle-pattern-v1';
 const urlsToCache = [
   './',
   './index.html',

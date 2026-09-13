@@ -54,22 +54,22 @@ jobs:
         run: |
           cd android
           ./gradlew bundleRelease --stacktrace
-          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 -keystore ../release.keystore app/build/outputs/bundle/release/app-release.aab windingkey -storepass windingpassword -keypass windingpassword
+          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 -keystore ../release.keystore app/build/outputs/bundle/release/app-release.aab puzzlepatternkey -storepass puzzlepassword -keypass puzzlepassword
 
       - name: Upload APK Artifact (Direct Phone Install)
         uses: actions/upload-artifact@v4
         with:
-          name: WindingArrows-APK
+          name: PuzzlePattern-APK
           path: android/app/build/outputs/apk/debug/app-debug.apk
 
       - name: Upload Signed AAB Artifact (Google Play Store)
         uses: actions/upload-artifact@v4
         with:
-          name: WindingArrows-PlayStore-AAB
+          name: PuzzlePattern-PlayStore-AAB
           path: android/app/build/outputs/bundle/release/app-release.aab
 
       - name: Backup Keystore Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: WindingArrows-Keystore-Backup
+          name: PuzzlePattern-Keystore-Backup
           path: release.keystore

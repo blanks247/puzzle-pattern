@@ -1,7 +1,7 @@
 {
-  "name": "Winding Arrows: Puzzle Escape",
-  "short_name": "Winding Arrows",
-  "description": "Solve winding polyline arrow puzzles and dodge looping trains in this cozy logic escape game!",
+  "name": "Puzzle Pattern",
+  "short_name": "Puzzle Pattern",
+  "description": "A beautiful edge-matching puzzle game.",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#fbfaf5",
