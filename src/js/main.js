@@ -143,17 +143,17 @@ const App = {
             const isUnlocked = idx <= unlockedIndex;
             const btn = document.createElement('button');
             
-            btn.className = \`flex flex-col items-center justify-center p-3 rounded-2xl border transition \${
+            btn.className = `flex flex-col items-center justify-center p-3 rounded-2xl border transition ${
                 isUnlocked 
                 ? 'glass-btn border-amber-500/30 text-white hover:bg-white/10 active:scale-95 shadow-[0_0_15px_rgba(251,191,36,0.1)]' 
                 : 'bg-black/40 border-white/5 text-slate-600 cursor-not-allowed opacity-60'
-            }\`;
+            }`;
             
-            btn.innerHTML = \`
-                <div class="font-display font-extrabold text-sm \${isUnlocked ? 'text-amber-400' : 'text-slate-600'}">\${lvl.level}</div>
-                <div class="text-[10px] text-slate-400 mt-0.5">\${lvl.size} x \${lvl.size}</div>
-                <i class="fa-solid \${isUnlocked ? 'fa-puzzle-piece text-amber-500' : 'fa-lock text-slate-600'} text-xs mt-1.5"></i>
-            \`;
+            btn.innerHTML = `
+                <div class="font-display font-extrabold text-sm ${isUnlocked ? 'text-amber-400' : 'text-slate-600'}">${lvl.level}</div>
+                <div class="text-[10px] text-slate-400 mt-0.5">${lvl.size} x ${lvl.size}</div>
+                <i class="fa-solid ${isUnlocked ? 'fa-puzzle-piece text-amber-500' : 'fa-lock text-slate-600'} text-xs mt-1.5"></i>
+            `;
             
             if (isUnlocked) {
                 btn.addEventListener('click', () => {
