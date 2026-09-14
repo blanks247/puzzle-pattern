@@ -521,21 +521,25 @@
         function initDragAndDrop() {
             const boardEl = document.getElementById('puzzle-board');
             if (!boardEl) return;
-            boardEl.addEventListener('touchstart', (e) => {
+            
+            const handleStart = (e) => {
                 if (isGameCleared) return;
-                const touch = e.touches[0];
-                const target = document.elementFromPoint(touch.clientX, touch.clientY);
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                const target = document.elementFromPoint(clientX, clientY);
                 const tileCard = target ? target.closest('.tile-card') : null;
                 if (tileCard) {
                     const r = parseInt(tileCard.dataset.row, 10);
                     const c = parseInt(tileCard.dataset.col, 10);
                     if (!boardState[r][c].isFixed) { dragSourceCoord = { r, c }; }
                 }
-            }, { passive: true });
-            boardEl.addEventListener('touchend', (e) => {
+            };
+            
+            const handleEnd = (e) => {
                 if (!dragSourceCoord || isGameCleared) return;
-                const touch = e.changedTouches[0];
-                const target = document.elementFromPoint(touch.clientX, touch.clientY);
+                const clientX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
+                const clientY = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
+                const target = document.elementFromPoint(clientX, clientY);
                 const tileCard = target ? target.closest('.tile-card') : null;
                 if (tileCard) {
                     const r = parseInt(tileCard.dataset.row, 10);
@@ -546,7 +550,12 @@
                     }
                 }
                 dragSourceCoord = null;
-            }, { passive: true });
+            };
+
+            boardEl.addEventListener('touchstart', handleStart, { passive: true });
+            boardEl.addEventListener('mousedown', handleStart, { passive: true });
+            boardEl.addEventListener('touchend', handleEnd, { passive: true });
+            window.addEventListener('mouseup', handleEnd, { passive: true });
         }
 
         function handleVictory() {
