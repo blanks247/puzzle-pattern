@@ -49,11 +49,11 @@ const CAMPAIGN_LEVELS = [
     },
     {
         "level": 7,
-        "size": 6,
-        "numMotifs": 6,
+        "size": 4,
+        "numMotifs": 5,
         "title": "Level 7",
-        "difficulty": "Expert",
-        "fixedCount": 1
+        "difficulty": "Casual",
+        "fixedCount": 0
     },
     {
         "level": 8,
@@ -129,11 +129,11 @@ const CAMPAIGN_LEVELS = [
     },
     {
         "level": 17,
-        "size": 6,
-        "numMotifs": 6,
+        "size": 4,
+        "numMotifs": 5,
         "title": "Level 17",
-        "difficulty": "Expert",
-        "fixedCount": 1
+        "difficulty": "Casual",
+        "fixedCount": 0
     },
     {
         "level": 18,
@@ -209,11 +209,11 @@ const CAMPAIGN_LEVELS = [
     },
     {
         "level": 27,
-        "size": 6,
-        "numMotifs": 6,
+        "size": 4,
+        "numMotifs": 5,
         "title": "Level 27",
-        "difficulty": "Expert",
-        "fixedCount": 1
+        "difficulty": "Casual",
+        "fixedCount": 0
     },
     {
         "level": 28,
@@ -289,11 +289,11 @@ const CAMPAIGN_LEVELS = [
     },
     {
         "level": 37,
-        "size": 6,
-        "numMotifs": 6,
+        "size": 4,
+        "numMotifs": 5,
         "title": "Level 37",
-        "difficulty": "Expert",
-        "fixedCount": 1
+        "difficulty": "Casual",
+        "fixedCount": 0
     },
     {
         "level": 38,
@@ -369,11 +369,11 @@ const CAMPAIGN_LEVELS = [
     },
     {
         "level": 47,
-        "size": 6,
-        "numMotifs": 6,
+        "size": 4,
+        "numMotifs": 5,
         "title": "Level 47",
-        "difficulty": "Expert",
-        "fixedCount": 1
+        "difficulty": "Casual",
+        "fixedCount": 0
     },
     {
         "level": 48,
