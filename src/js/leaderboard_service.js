@@ -1,43 +1,43 @@
-뿯붿// Winding Arrows - Real Live Leaderboard & Cloud Sync Service
+// Pattern Swap - Real Live Leaderboard & Cloud Sync Service
 
 const LeaderboardService = {
   // Public Firebase Realtime Database / REST endpoint for live global leaderboard
-  API_URL: 'https://winding-arrows-default-rtdb.asia-southeast1.firebasedatabase.app/leaderboard',
+  API_URL: 'https://pattern-swap-rtdb.asia-southeast1.firebasedatabase.app/leaderboard',
 
   getPlayerProfile() {
-    let playerId = localStorage.getItem('winding_player_uuid');
+    let playerId = localStorage.getItem('pattern_swap_player_uuid');
     if (!playerId) {
       playerId = 'player_' + Math.random().toString(36).substring(2, 10);
-      localStorage.setItem('winding_player_uuid', playerId);
+      localStorage.setItem('pattern_swap_player_uuid', playerId);
     }
-    let playerName = localStorage.getItem('winding_player_name');
+    let playerName = localStorage.getItem('pattern_swap_player_name');
     if (!playerName) {
       playerName = 'Player_' + Math.floor(1000 + Math.random() * 9000);
-      localStorage.setItem('winding_player_name', playerName);
+      localStorage.setItem('pattern_swap_player_name', playerName);
     }
-    let avatar = localStorage.getItem('winding_player_avatar') || '뿯½Ÿ뿯½Š';
+    let avatar = localStorage.getItem('pattern_swap_player_avatar') || '뿯½Ÿ뿯½Š';
     return { playerId, playerName, avatar };
   },
 
   setPlayerProfile(newName, newAvatar) {
     const trimmedName = (newName || '').trim().substring(0, 16);
     if (trimmedName) {
-      localStorage.setItem('winding_player_name', trimmedName);
+      localStorage.setItem('pattern_swap_player_name', trimmedName);
     }
     if (newAvatar) {
-      localStorage.setItem('winding_player_avatar', newAvatar);
+      localStorage.setItem('pattern_swap_player_avatar', newAvatar);
     }
     this.syncProgress();
   },
 
   async syncProgress(clearedLevelId) {
     const { playerId, playerName, avatar } = this.getPlayerProfile();
-    const clearedLevels = JSON.parse(localStorage.getItem('winding_cleared_levels')) || [];
+    const clearedLevels = JSON.parse(localStorage.getItem('pattern_swap_cleared_levels')) || [];
     const maxLevel = clearedLevels.length > 0 ? Math.max(...clearedLevels) : 0;
     
     if (clearedLevelId && clearedLevelId > maxLevel) {
       clearedLevels.push(clearedLevelId);
-      localStorage.setItem('winding_cleared_levels', JSON.stringify(clearedLevels));
+      localStorage.setItem('pattern_swap_cleared_levels', JSON.stringify(clearedLevels));
     }
 
     const currentMax = clearedLevels.length > 0 ? Math.max(...clearedLevels) : 0;
@@ -51,9 +51,9 @@ const LeaderboardService = {
     };
 
     // Save locally
-    const localDb = JSON.parse(localStorage.getItem('winding_global_leaderboard')) || {};
+    const localDb = JSON.parse(localStorage.getItem('pattern_swap_global_leaderboard')) || {};
     localDb[playerId] = payload;
-    localStorage.setItem('winding_global_leaderboard', JSON.stringify(localDb));
+    localStorage.setItem('pattern_swap_global_leaderboard', JSON.stringify(localDb));
 
     // Async Cloud Push to Live Backend
     try {
@@ -78,12 +78,12 @@ const LeaderboardService = {
       }
     } catch (e) {
       // Fallback to local cached data
-      playersMap = JSON.parse(localStorage.getItem('winding_global_leaderboard')) || {};
+      playersMap = JSON.parse(localStorage.getItem('pattern_swap_global_leaderboard')) || {};
     }
 
     // Include current player profile if offline or missing
     const { playerId, playerName, avatar } = this.getPlayerProfile();
-    const clearedLevels = JSON.parse(localStorage.getItem('winding_cleared_levels')) || [];
+    const clearedLevels = JSON.parse(localStorage.getItem('pattern_swap_cleared_levels')) || [];
     const currentMax = clearedLevels.length > 0 ? Math.max(...clearedLevels) : 0;
     
     if (!playersMap[playerId]) {
