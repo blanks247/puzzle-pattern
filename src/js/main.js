@@ -79,8 +79,17 @@ const App = {
             if (typeof LeaderboardService !== 'undefined') LeaderboardService.renderGlobalRanks();
         });
         document.getElementById('btn-settings')?.addEventListener('click', () => {
-            document.getElementById('settings-overlay').classList.remove('hidden');
-            document.getElementById('settings-overlay').classList.add('active');
+            const so = document.getElementById('settings-overlay');
+            so.classList.remove('hidden');
+            so.style.display = 'flex';
+            setTimeout(() => so.classList.add('active'), 10);
+        });
+        
+        document.getElementById('btn-game-settings')?.addEventListener('click', () => {
+            const so = document.getElementById('settings-overlay');
+            so.classList.remove('hidden');
+            so.style.display = 'flex';
+            setTimeout(() => so.classList.add('active'), 10);
         });
 
         // Navigation Back Buttons
@@ -93,8 +102,9 @@ const App = {
 
         // Settings Toggles
         document.getElementById('btn-settings-close')?.addEventListener('click', () => {
-            document.getElementById('settings-overlay').classList.add('hidden');
-            document.getElementById('settings-overlay').classList.remove('active');
+            const so = document.getElementById('settings-overlay');
+            so.classList.remove('active');
+            setTimeout(() => { so.style.display = 'none'; so.classList.add('hidden'); }, 300);
         });
         document.getElementById('toggle-sfx')?.addEventListener('click', () => {
             this.sfxEnabled = !this.sfxEnabled;
