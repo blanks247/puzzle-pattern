@@ -128,6 +128,8 @@
         let timerSeconds = 0;
         let timerInterval = null;
         let moveHistory = [];
+        let userHasInteracted = false;
+        let tutorialInterval = null;
         let isGameCleared = false;
         let customScrambleDiff = 'medium';
         let levelsBeatenThisSession = 0; // Integrated AdMob Logic
@@ -543,6 +545,10 @@
             if (!boardEl) return;
             
             const handleStart = (e) => {
+                userHasInteracted = true;
+                const hand = document.getElementById('tutorial-hand');
+                if (hand) hand.style.opacity = '0';
+                if (tutorialInterval) clearInterval(tutorialInterval);
                 if (isGameCleared) return;
                 const clientX = e.touches ? e.touches[0].clientX : e.clientX;
                 const clientY = e.touches ? e.touches[0].clientY : e.clientY;
@@ -685,6 +691,97 @@
             document.getElementById('grid-size-subtitle').textContent = `${activeGridSize} × ${activeGridSize} Grid • ${customScrambleDiff.toUpperCase()}`;
             const numMotifs = Math.min(7, activeGridSize + 1);
             initNewPuzzleBoard(activeGridSize, numMotifs, 0, customScrambleDiff);
+        }
+
+        
+        function startTutorialWalkthrough() {
+            if (tutorialInterval) clearInterval(tutorialInterval);
+            
+            setTimeout(() => {
+                if (userHasInteracted || currentLevelIndex !== 0 || isCustomMode) return;
+                
+                let tutorialHand = document.getElementById('tutorial-hand');
+                if (!tutorialHand) {
+                    tutorialHand = document.createElement('div');
+                    tutorialHand.id = 'tutorial-hand';
+                    tutorialHand.className = 'fixed z-[100] pointer-events-none';
+                    tutorialHand.style.width = '40px';
+                    tutorialHand.style.height = '40px';
+                    tutorialHand.style.transformOrigin = 'top left';
+                    tutorialHand.innerHTML = '<i class="fa-solid fa-hand-pointer text-5xl text-blue-500 drop-shadow-[0_4px_12px_rgba(0,0,0,0.4)] -rotate-12"></i>';
+                    document.body.appendChild(tutorialHand);
+                }
+                
+                let move = null;
+                for (let r = 0; r < activeGridSize; r++) {
+                    for (let c = 0; c < activeGridSize; c++) {
+                        if (boardState[r][c].id !== solutionBoard[r][c].id) {
+                            for (let sr = 0; sr < activeGridSize; sr++) {
+                                for (let sc = 0; sc < activeGridSize; sc++) {
+                                    if (boardState[sr][sc].id === solutionBoard[r][c].id) {
+                                        move = { from: {r: sr, c: sc}, to: {r, c} };
+                                        break;
+                                    }
+                                }
+                                if (move) break;
+                            }
+                        }
+                        if (move) break;
+                    }
+                }
+                
+                if (!move) return;
+                
+                const animateHand = () => {
+                    if (userHasInteracted) {
+                        tutorialHand.style.opacity = '0';
+                        return;
+                    }
+                    
+                    const tiles = document.querySelectorAll('.tile-card');
+                    let fromEl, toEl;
+                    tiles.forEach(t => {
+                        if (parseInt(t.dataset.row) === move.from.r && parseInt(t.dataset.col) === move.from.c) fromEl = t;
+                        if (parseInt(t.dataset.row) === move.to.r && parseInt(t.dataset.col) === move.to.c) toEl = t;
+                    });
+                    
+                    if (!fromEl || !toEl) return;
+                    
+                    const r1 = fromEl.getBoundingClientRect();
+                    const r2 = toEl.getBoundingClientRect();
+                    
+                    tutorialHand.style.transition = 'opacity 0.3s, transform 0.3s, left 0s, top 0s';
+                    tutorialHand.style.opacity = '1';
+                    tutorialHand.style.transform = 'scale(1) translate(0, 0)';
+                    tutorialHand.style.left = (r1.left + r1.width/2 - 10) + 'px';
+                    tutorialHand.style.top = (r1.top + r1.height/2) + 'px';
+                    
+                    setTimeout(() => {
+                        if (userHasInteracted) return;
+                        tutorialHand.style.transform = 'scale(0.85) translate(0, 0)'; 
+                        
+                        setTimeout(() => {
+                            if (userHasInteracted) return;
+                            tutorialHand.style.transition = 'opacity 0.3s, transform 0.3s, left 0.8s ease-in-out, top 0.8s ease-in-out';
+                            tutorialHand.style.left = (r2.left + r2.width/2 - 10) + 'px';
+                            tutorialHand.style.top = (r2.top + r2.height/2) + 'px';
+                            
+                            setTimeout(() => {
+                                if (userHasInteracted) return;
+                                tutorialHand.style.transform = 'scale(1) translate(0, 0)'; 
+                                
+                                setTimeout(() => {
+                                    if (!userHasInteracted) tutorialHand.style.opacity = '0';
+                                }, 500);
+                            }, 800);
+                        }, 300);
+                    }, 100);
+                };
+                
+                animateHand();
+                tutorialInterval = setInterval(animateHand, 2500);
+                
+            }, 800);
         }
 
         function initNewPuzzleBoard(size, numMotifs, fixedCount = 0, scrambleDiff = 'medium') {
