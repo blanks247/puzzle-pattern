@@ -1,4 +1,4 @@
-// Edges - Main App Controller
+// Pattern Swap - Main App Controller
 
 const App = {
     initEconomy: function() { if (typeof EconomyService !== "undefined") EconomyService.updateUI(); },
@@ -104,16 +104,19 @@ const App = {
         
         document.getElementById('btn-shop')?.addEventListener('click', () => {
             const so = document.getElementById('shop-overlay');
-            so.classList.remove('hidden');
-            if (typeof renderShopUI !== 'undefined') renderShopUI();
-            so.style.display = 'flex';
-            setTimeout(() => so.classList.add('active'), 10);
+            if (so) {
+                so.classList.remove('hidden');
+                if (typeof renderShopUI !== 'undefined') renderShopUI();
+                so.style.display = 'flex';
+                setTimeout(() => so.classList.add('active'), 10);
+            }
         });
-        
         document.getElementById('btn-shop-close')?.addEventListener('click', () => {
             const so = document.getElementById('shop-overlay');
-            so.classList.remove('active');
-            setTimeout(() => { so.style.display = 'none'; so.classList.add('hidden'); }, 300);
+            if (so) {
+                so.classList.remove('active');
+                setTimeout(() => { so.style.display = 'none'; so.classList.add('hidden'); }, 300);
+            }
         });
 
         // Settings Toggles
