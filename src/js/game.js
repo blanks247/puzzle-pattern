@@ -385,7 +385,7 @@
                 for (let c = 0; c < activeGridSize; c++) {
                     const tile = boardState[r][c];
                     const tileDiv = document.createElement('div');
-                    tileDiv.className = `tile-card relative flex items-center justify-center p-0.5 shadow-md ${
+                    tileDiv.className = `tile-card relative flex items-center justify-center p-0 shadow-md ${
                         tile.isFixed ? 'fixed-tile' : ''
                     } ${selectedTileCoord && selectedTileCoord.r === r && selectedTileCoord.c === c ? 'selected' : ''}`;
                     tileDiv.dataset.row = r;
