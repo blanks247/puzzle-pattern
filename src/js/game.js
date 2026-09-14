@@ -398,7 +398,7 @@
             }
         }
 
-        function renderEdgeGlowOverlays(matchMap) {
+        function renderEdgeGlowOverlays(matchMap) { return; // Disabled per user request
             const container = document.getElementById('edge-overlay-container');
             if (!container) return;
             container.innerHTML = '';
