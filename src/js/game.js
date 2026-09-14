@@ -107,6 +107,16 @@
 
         let currentLevelIndex = 0;
         let isCustomMode = false;
+
+        let currentSeed = 1;
+        function getRand() {
+            if (isCustomMode) return getRand();
+            let t = currentSeed += 0x6D2B79F5;
+            t = Math.imul(t ^ t >>> 15, t | 1);
+            t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+            return ((t ^ t >>> 14) >>> 0) / 4294967296;
+        }
+
         let activeGridSize = 3;
         let activeNumMotifs = 3;
         let activePaletteKey = 'classic';
@@ -199,14 +209,14 @@
             }
             for (let r = 0; r < size; r++) {
                 for (let c = 0; c < size - 1; c++) {
-                    const motif = Math.floor(Math.random() * numMotifs) + 1;
+                    const motif = Math.floor(getRand() * numMotifs) + 1;
                     board[r][c].edges[1] = motif;
                     board[r][c+1].edges[3] = motif;
                 }
             }
             for (let r = 0; r < size - 1; r++) {
                 for (let c = 0; c < size; c++) {
-                    const motif = Math.floor(Math.random() * numMotifs) + 1;
+                    const motif = Math.floor(getRand() * numMotifs) + 1;
                     board[r][c].edges[2] = motif;
                     board[r+1][c].edges[0] = motif;
                 }
@@ -214,8 +224,8 @@
             if (fixedCount > 0) {
                 let fixedAssigned = 0;
                 while (fixedAssigned < fixedCount) {
-                    let randR = Math.floor(Math.random() * size);
-                    let randC = Math.floor(Math.random() * size);
+                    let randR = Math.floor(getRand() * size);
+                    let randC = Math.floor(getRand() * size);
                     if (!board[randR][randC].isFixed) {
                         board[randR][randC].isFixed = true;
                         fixedAssigned++;
@@ -249,7 +259,7 @@
             if (scrambleDiff === 'hard') shuffleRounds = 5;
             for (let round = 0; round < shuffleRounds; round++) {
                 for (let i = nonFixedTiles.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
+                    const j = Math.floor(getRand() * (i + 1));
                     const temp = nonFixedTiles[i];
                     nonFixedTiles[i] = nonFixedTiles[j];
                     nonFixedTiles[j] = temp;
@@ -620,9 +630,9 @@
             for (let i = 0; i < 70; i++) {
                 particles.push({
                     x: canvas.width / 2, y: canvas.height / 2,
-                    vx: (Math.random() - 0.5) * 12, vy: (Math.random() - 0.7) * 12,
-                    size: Math.random() * 7 + 4, color: colors[Math.floor(Math.random() * colors.length)],
-                    alpha: 1, decay: Math.random() * 0.015 + 0.01
+                    vx: (getRand() - 0.5) * 12, vy: (getRand() - 0.7) * 12,
+                    size: getRand() * 7 + 4, color: colors[Math.floor(getRand() * colors.length)],
+                    alpha: 1, decay: getRand() * 0.015 + 0.01
                 });
             }
             function animate() {
@@ -661,6 +671,7 @@
         }
 
         function initNewPuzzleBoard(size, numMotifs, fixedCount = 0, scrambleDiff = 'medium') {
+            if (!isCustomMode) { currentSeed = 1337 + currentLevelIndex * 999; }
             stopTimer();
             isGameCleared = false;
             moveCount = 0;
