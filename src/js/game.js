@@ -132,21 +132,12 @@
         let customScrambleDiff = 'medium';
         let levelsBeatenThisSession = 0; // Integrated AdMob Logic
 
-        let totalCoins = parseInt(localStorage.getItem('pattern_swap_coins') || '0', 10);
+        
         let leaderboard = JSON.parse(localStorage.getItem('pattern_swap_leaderboard') || '[]');
 
-        function updateCoinDisplay() {
-            const counter = document.getElementById('coin-counter');
-            if (counter) counter.textContent = totalCoins.toLocaleString();
-            const lbCounter = document.getElementById('leaderboard-total-coins');
-            if (lbCounter) lbCounter.textContent = totalCoins.toLocaleString();
-        }
+        
 
-        function addCoins(amount) {
-            totalCoins += amount;
-            localStorage.setItem('pattern_swap_coins', totalCoins.toString());
-            updateCoinDisplay();
-        }
+        
 
         function saveLeaderboardRecord(levelName, moves, timeSeconds, coinsEarned) {
             const record = {
@@ -493,8 +484,21 @@
         // --- ADMOB INJECTED HINT LOGIC ---
         function provideHint() {
             if (isGameCleared) return;
+            if (typeof EconomyService !== 'undefined') {
+                if (EconomyService.spendCoins(150)) {
+                    executeHintLogic();
+                    return;
+                }
+            }
             if (typeof AdMobService !== 'undefined' && AdMobService.showRewardedAd) {
-                AdMobService.showRewardedAd(() => { executeHintLogic(); });
+                AdMobService.showRewardedAd(() => { 
+                    if (typeof EconomyService !== 'undefined') EconomyService.addCoins(150); // Give them coins for the ad
+                    executeHintLogic(); 
+                });
+            } else {
+                alert("You need 150 coins for a hint!");
+            }
+        });
             } else {
                 executeHintLogic();
             }
@@ -578,7 +582,7 @@
             const speedBonus = Math.max(0, 300 - timerSeconds * 2);
             const moveBonus = Math.max(0, 200 - moveCount * 5);
             const totalEarned = baseCoins + speedBonus + moveBonus;
-            addCoins(totalEarned);
+            if (typeof EconomyService !== "undefined") EconomyService.addCoins(totalEarned);
             const lvlName = isCustomMode ? `Custom ${activeGridSize}x${activeGridSize}` : `Campaign Level ${currentLevelIndex + 1}`;
             saveLeaderboardRecord(lvlName, moveCount, timerSeconds, totalEarned);
             if (!isCustomMode && currentLevelIndex < window.CAMPAIGN_LEVELS.length - 1) {
@@ -684,6 +688,131 @@
             renderBoardUI();
             startTimer();
         }
+
+        
+        window.renderShopUI = function() {
+            const container = document.getElementById('shop-content-container');
+            if (!container) return;
+            
+            let html = '';
+            
+            // Themes Section
+            html += '<div class="mb-4"><h3 class="text-white font-bold tracking-widest mb-3"><i class="fa-solid fa-palette text-amber-400 mr-2"></i>THEMES</h3>';
+            Object.keys(PALETTES).forEach(key => {
+                const palette = PALETTES[key];
+                const itemId = 'theme_' + key;
+                const isUnlocked = EconomyService.hasUnlocked(itemId);
+                let cost = 0;
+                if (key === 'synth') cost = 1000;
+                if (key === 'pastel') cost = 2500;
+                if (key === 'obsidian') cost = 5000;
+                
+                const isEquipped = activePaletteKey === key;
+                
+                let btnHtml = '';
+                if (isEquipped) {
+                    btnHtml = '<span class="text-xs font-bold text-amber-400 border border-amber-400/50 px-3 py-1 rounded-full">EQUIPPED</span>';
+                } else if (isUnlocked) {
+                    btnHtml = `<button onclick="equipTheme('${key}')" class="text-xs font-bold bg-slate-700 text-white px-4 py-1.5 rounded-full active:scale-95">EQUIP</button>`;
+                } else {
+                    btnHtml = `<button onclick="buyItem('${itemId}', ${cost}, 'theme', '${key}')" class="text-xs font-bold bg-emerald-600 text-white px-3 py-1.5 rounded-full active:scale-95 flex items-center gap-1"><i class="fa-solid fa-coins"></i> ${cost}</button>`;
+                }
+
+                html += `<div class="flex items-center justify-between p-3 rounded-2xl border ${isEquipped ? 'bg-slate-800 border-amber-500/50' : 'bg-slate-900 border-slate-700'} mb-2">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full" style="background: ${palette.boardBg}; border: 2px solid ${palette.frameBorder}"></div>
+                        <span class="text-sm font-bold ${isUnlocked ? 'text-white' : 'text-slate-400'}">${palette.name}</span>
+                    </div>
+                    ${btnHtml}
+                </div>`;
+            });
+            html += '</div>';
+
+            // Grids Section
+            html += '<div class="mb-4"><h3 class="text-white font-bold tracking-widest mb-3"><i class="fa-solid fa-grid-2 text-purple-400 mr-2"></i>CUSTOM GRIDS</h3>';
+            const grids = [
+                { size: 6, name: '6x6 Expert', cost: 2000 },
+                { size: 7, name: '7x7 Master', cost: 5000 },
+                { size: 8, name: '8x8 Grandmaster', cost: 10000 }
+            ];
+            grids.forEach(g => {
+                const itemId = 'grid_' + g.size;
+                const isUnlocked = EconomyService.hasUnlocked(itemId);
+                
+                let btnHtml = '';
+                if (isUnlocked) {
+                    btnHtml = '<span class="text-xs font-bold text-slate-400 px-3 py-1">UNLOCKED</span>';
+                } else {
+                    btnHtml = `<button onclick="buyItem('${itemId}', ${g.cost}, 'grid', '')" class="text-xs font-bold bg-emerald-600 text-white px-3 py-1.5 rounded-full active:scale-95 flex items-center gap-1"><i class="fa-solid fa-coins"></i> ${g.cost}</button>`;
+                }
+
+                html += `<div class="flex items-center justify-between p-3 rounded-2xl border bg-slate-900 border-slate-700 mb-2">
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm font-bold ${isUnlocked ? 'text-white' : 'text-slate-400'}">${g.name}</span>
+                    </div>
+                    ${btnHtml}
+                </div>`;
+            });
+            html += '</div>';
+
+            
+            // Badges Section
+            html += '<div class="mb-4"><h3 class="text-white font-bold tracking-widest mb-3"><i class="fa-solid fa-award text-rose-400 mr-2"></i>BADGES</h3>';
+            const badges = [
+                { id: 'badge_none', name: 'No Badge', cost: 0, icon: '' },
+                { id: 'badge_fire', name: 'Fire Badge', cost: 5000, icon: '<i class="fa-solid fa-fire text-rose-500"></i>' },
+                { id: 'badge_crown', name: 'Crown Badge', cost: 10000, icon: '<i class="fa-solid fa-crown text-amber-400"></i>' },
+                { id: 'badge_diamond', name: 'Diamond Badge', cost: 25000, icon: '<i class="fa-solid fa-gem text-cyan-400"></i>' }
+            ];
+            const currentBadge = typeof EconomyService !== 'undefined' ? EconomyService.getEquippedBadge() : 'badge_none';
+            
+            badges.forEach(b => {
+                const isUnlocked = typeof EconomyService !== 'undefined' && EconomyService.hasUnlocked(b.id);
+                const isEquipped = currentBadge === b.id;
+                
+                let btnHtml = '';
+                if (isEquipped) {
+                    btnHtml = '<span class="text-xs font-bold text-rose-400 border border-rose-400/50 px-3 py-1 rounded-full">EQUIPPED</span>';
+                } else if (isUnlocked) {
+                    btnHtml = `<button onclick="buyItem('${b.id}', 0, 'badge', '${b.id}')" class="text-xs font-bold bg-slate-700 text-white px-4 py-1.5 rounded-full active:scale-95">EQUIP</button>`;
+                } else {
+                    btnHtml = `<button onclick="buyItem('${b.id}', ${b.cost}, 'badge', '${b.id}')" class="text-xs font-bold bg-emerald-600 text-white px-3 py-1.5 rounded-full active:scale-95 flex items-center gap-1"><i class="fa-solid fa-coins"></i> ${b.cost}</button>`;
+                }
+
+                html += `<div class="flex items-center justify-between p-3 rounded-2xl border ${isEquipped ? 'bg-slate-800 border-rose-500/50' : 'bg-slate-900 border-slate-700'} mb-2">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-slate-950 flex items-center justify-center">${b.icon}</div>
+                        <span class="text-sm font-bold ${isUnlocked ? 'text-white' : 'text-slate-400'}">${b.name}</span>
+                    </div>
+                    ${btnHtml}
+                </div>`;
+            });
+            html += '</div>';
+            
+            container.innerHTML = html;
+        };
+
+        window.equipBadge = function(id) {
+            if (typeof EconomyService !== 'undefined') EconomyService.equipBadge(id);
+            if (typeof renderShopUI !== 'undefined') renderShopUI();
+            if (typeof LeaderboardService !== 'undefined') LeaderboardService.syncProgress();
+        };
+
+        window.buyItem = function(itemId, cost, type, key) {
+            if (typeof EconomyService !== 'undefined' && EconomyService.spendCoins(cost)) {
+                EconomyService.unlockItem(itemId);
+                if (type === 'theme') {
+                    equipTheme(key);
+                } else if (type === 'badge') {
+                    equipBadge(key);
+                }
+                renderShopUI();
+                sound.playWin();
+            } else {
+                alert("Not enough coins!");
+            }
+        };
+
 
         function populateCampaignLevelsGrid() {
             const grid = document.getElementById('levels-grid');
