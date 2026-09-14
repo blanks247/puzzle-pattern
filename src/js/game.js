@@ -571,7 +571,7 @@
             addCoins(totalEarned);
             const lvlName = isCustomMode ? `Custom ${activeGridSize}x${activeGridSize}` : `Campaign Level ${currentLevelIndex + 1}`;
             saveLeaderboardRecord(lvlName, moveCount, timerSeconds, totalEarned);
-            if (!isCustomMode && currentLevelIndex < CAMPAIGN_LEVELS.length - 1) {
+            if (!isCustomMode && currentLevelIndex < window.CAMPAIGN_LEVELS.length - 1) {
                 let unlockedIndex = parseInt(localStorage.getItem('pattern_swap_unlocked') || '0', 10);
                 if (currentLevelIndex + 1 > unlockedIndex) {
                     localStorage.setItem('pattern_swap_unlocked', (currentLevelIndex + 1).toString());
@@ -605,7 +605,7 @@
                 document.getElementById('victory-time').textContent = document.getElementById('timer-display').textContent;
                 document.getElementById('victory-moves').textContent = moveCount;
                 document.getElementById('victory-coins').textContent = `+${totalEarned}`;
-                document.getElementById('victory-overlay').classList.remove('hidden');
+                const vo = document.getElementById('victory-overlay'); if (vo) { vo.classList.remove('hidden'); vo.style.display = 'flex'; setTimeout(() => vo.classList.add('active'), 10); }
             }, 1200);
         }
 
@@ -644,7 +644,7 @@
         function startCampaignLevel(lvlIndex) {
             currentLevelIndex = lvlIndex;
             isCustomMode = false;
-            const lvlData = CAMPAIGN_LEVELS[lvlIndex];
+            const lvlData = window.CAMPAIGN_LEVELS[lvlIndex];
             activeGridSize = lvlData.size;
             activeNumMotifs = lvlData.numMotifs;
             document.getElementById('level-title-display').textContent = lvlData.title.toUpperCase();
@@ -679,7 +679,7 @@
             if (!grid) return;
             grid.innerHTML = '';
             const unlockedIndex = parseInt(localStorage.getItem('pattern_swap_unlocked') || '0', 10);
-            CAMPAIGN_LEVELS.forEach((lvl, idx) => {
+            window.CAMPAIGN_LEVELS.forEach((lvl, idx) => {
                 const isUnlocked = idx <= unlockedIndex;
                 const card = document.createElement('button');
                 card.className = `flex flex-col items-center justify-center p-3 rounded-2xl border transition ${
@@ -781,15 +781,15 @@ if (el_btn_theme) el_btn_theme.addEventListener('click', () => { populateThemePi
 if (el_btn_close_theme) el_btn_close_theme.addEventListener('click', () => { document.getElementById('modal-theme').classList.add('hidden'); });
             
             const el_btn_victory_replay = document.getElementById('btn-victory-replay');
-if (el_btn_victory_replay) el_btn_victory_replay.addEventListener('click', () => { document.getElementById('victory-overlay').classList.add('hidden'); if (isCustomMode) startCustomGame(); else startCampaignLevel(currentLevelIndex); });
+if (el_btn_victory_replay) el_btn_victory_replay.addEventListener('click', () => { const vo = document.getElementById('victory-overlay'); if (vo) { vo.classList.remove('active'); setTimeout(() => { vo.style.display = 'none'; vo.classList.add('hidden'); }, 300); } if (isCustomMode) startCustomGame(); else startCampaignLevel(currentLevelIndex); });
 
             // --- ADMOB INJECTED INTERSTITIAL LOGIC ---
             const el_btn_victory_next = document.getElementById('btn-victory-next');
 if (el_btn_victory_next) el_btn_victory_next.addEventListener('click', () => {
-                document.getElementById('victory-overlay').classList.add('hidden');
+                const vo = document.getElementById('victory-overlay'); if (vo) { vo.classList.remove('active'); setTimeout(() => { vo.style.display = 'none'; vo.classList.add('hidden'); }, 300); }
                 
                 const loadNext = () => {
-                    if (!isCustomMode && currentLevelIndex < CAMPAIGN_LEVELS.length - 1) {
+                    if (!isCustomMode && currentLevelIndex < window.CAMPAIGN_LEVELS.length - 1) {
                         startCampaignLevel(currentLevelIndex + 1);
                     } else {
                         startCustomGame();
