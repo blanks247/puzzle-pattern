@@ -273,8 +273,8 @@
         function createTileSVG(tile, paletteKey) {
             const palette = PALETTES[paletteKey] || PALETTES.classic;
             const size = 100;
-            let svgHTML = `<svg viewBox="0 0 ${size} ${size}" class="w-full h-full rounded-lg select-none pointer-events-none">`;
-            svgHTML += `<rect width="100" height="100" fill="${palette.boardBg}" rx="8" />`;
+            let svgHTML = `<svg viewBox="0 0 ${size} ${size}" class="w-full h-full rounded-none select-none pointer-events-none">`;
+            svgHTML += `<rect width="100" height="100" fill="${palette.boardBg}" rx="0" />`;
             const quadPolys = [`0,0 100,0 50,50`, `100,0 100,100 50,50`, `100,100 0,100 50,50`, `0,100 0,0 50,50`];
             tile.edges.forEach((motifIdx, edgeDir) => {
                 let fill = palette.borderMotif;
@@ -375,7 +375,7 @@
                 for (let c = 0; c < activeGridSize; c++) {
                     const tile = boardState[r][c];
                     const tileDiv = document.createElement('div');
-                    tileDiv.className = `tile-card relative rounded-xl flex items-center justify-center p-0.5 shadow-md ${
+                    tileDiv.className = `tile-card relative flex items-center justify-center p-0.5 shadow-md ${
                         tile.isFixed ? 'fixed-tile' : ''
                     } ${selectedTileCoord && selectedTileCoord.r === r && selectedTileCoord.c === c ? 'selected' : ''}`;
                     tileDiv.dataset.row = r;
