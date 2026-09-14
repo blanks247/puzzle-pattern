@@ -289,12 +289,22 @@
             tile.edges.forEach((motifIdx, edgeDir) => {
                 let fill = palette.borderMotif;
                 if (motifIdx > 0 && palette.motifs[motifIdx - 1]) { fill = palette.motifs[motifIdx - 1].bg; }
-                svgHTML += `<polygon points="${quadPolys[edgeDir]}" fill="${fill}" opacity="0.32" />`;
+                
+                // Solid colorful theme with opaque black borders
+                if (paletteKey === 'classic' || !paletteKey) {
+                    svgHTML += `<polygon points="${quadPolys[edgeDir]}" fill="${fill}" stroke="#111111" stroke-width="1.5" stroke-linejoin="miter" />`;
+                } else {
+                    svgHTML += `<polygon points="${quadPolys[edgeDir]}" fill="${fill}" opacity="0.32" />`;
+                }
+                
                 if (motifIdx === 0) {
-                    if (edgeDir === 0) svgHTML += `<rect x="0" y="0" width="100" height="6" fill="${palette.frameBorder}" rx="1"/>`;
-                    if (edgeDir === 1) svgHTML += `<rect x="94" y="0" width="6" height="100" fill="${palette.frameBorder}" rx="1"/>`;
-                    if (edgeDir === 2) svgHTML += `<rect x="0" y="94" width="100" height="6" fill="${palette.frameBorder}" rx="1"/>`;
-                    if (edgeDir === 3) svgHTML += `<rect x="0" y="0" width="6" height="100" fill="${palette.frameBorder}" rx="1"/>`;
+                    // For classic, edge pieces are solid gray, no extra lines
+                    if (paletteKey !== 'classic' && paletteKey) {
+                        if (edgeDir === 0) svgHTML += `<rect x="0" y="0" width="100" height="6" fill="${palette.frameBorder}" rx="1"/>`;
+                        if (edgeDir === 1) svgHTML += `<rect x="94" y="0" width="6" height="100" fill="${palette.frameBorder}" rx="1"/>`;
+                        if (edgeDir === 2) svgHTML += `<rect x="0" y="94" width="100" height="6" fill="${palette.frameBorder}" rx="1"/>`;
+                        if (edgeDir === 3) svgHTML += `<rect x="0" y="0" width="6" height="100" fill="${palette.frameBorder}" rx="1"/>`;
+                    }
                 } else {
                     const motif = palette.motifs[motifIdx - 1] || palette.motifs[0];
                     const accent = motif.accent;
