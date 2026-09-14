@@ -578,6 +578,28 @@
                 }
             }
             triggerConfetti();
+            
+            // Calculate Stars based on time
+            // 3 Stars: < (grid^2 * 3) seconds
+            // 2 Stars: < (grid^2 * 6) seconds
+            // 1 Star: otherwise
+            const par3 = activeGridSize * activeGridSize * 3;
+            const par2 = activeGridSize * activeGridSize * 6;
+            let stars = 1;
+            if (timerSeconds <= par3) stars = 3;
+            else if (timerSeconds <= par2) stars = 2;
+            
+            let starsHtml = '';
+            for(let i=1; i<=3; i++) {
+                if(i <= stars) {
+                    starsHtml += '<i class="fa-solid fa-star text-4xl text-amber-400 drop-shadow-[0_0_12px_rgba(251,191,36,0.8)] scale-110 transition-transform"></i>';
+                } else {
+                    starsHtml += '<i class="fa-solid fa-star text-4xl text-slate-700 opacity-50"></i>';
+                }
+            }
+            const starContainer = document.getElementById('victory-stars');
+            if(starContainer) starContainer.innerHTML = starsHtml;
+            
             setTimeout(() => {
                 document.getElementById('victory-subtitle').textContent = `${lvlName} Solved!`;
                 document.getElementById('victory-time').textContent = document.getElementById('timer-display').textContent;
