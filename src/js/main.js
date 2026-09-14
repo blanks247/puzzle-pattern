@@ -1,4 +1,4 @@
-// Pattern Swap - Main App Controller
+// Edges - Main App Controller
 
 const App = {
     activeScreen: 'menu-screen',

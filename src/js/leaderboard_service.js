@@ -1,4 +1,4 @@
-// Pattern Swap - Real Live Leaderboard & Cloud Sync Service
+// Edges - Real Live Leaderboard & Cloud Sync Service
 
 const LeaderboardService = {
   // Public Firebase Realtime Database / REST endpoint for live global leaderboard
